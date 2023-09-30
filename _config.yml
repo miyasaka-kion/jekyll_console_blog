@@ -9,7 +9,7 @@ header_pages:
 style: light # dark (default), light or hacker
 listen_for_clients_preferred_style: true # false (default) or true
 
-footer: 'inherited from <a href="https://www.cnblogs.com/kion/"> here</a>'
+footer: 'Y.L or K.M., inherited from <a href="https://www.cnblogs.com/kion/"> here</a>'
 
 style: dark # dark (default) or light
 listen_for_clients_preferred_style: true # true or false (default)
