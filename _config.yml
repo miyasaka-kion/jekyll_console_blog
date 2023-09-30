@@ -3,8 +3,9 @@
 #google_analytics: UA-NNNNNNNN-N
 
 header_pages:
- - index.md
- - about.md
+  - index.md
+  - C++.md
+  - dev.md
 
 style: light # dark (default), light or hacker
 listen_for_clients_preferred_style: true # false (default) or true
