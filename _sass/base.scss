@@ -131,3 +131,35 @@ pre { background-color: var(--background-color);  border: none;  padding: 0;  ma
 .highlight .vg { color: var(--code-color-7); } /* Name.Variable.Global */
 .highlight .vi { color: var(--code-color-7); } /* Name.Variable.Instance */
 .highlight .il { color: var(--code-color-14); } /* Literal.Number.Integer.Long */
+
+
+.emoji-switch {
+    position: relative;
+    overflow: hidden;
+}
+
+.emoji1, emoji2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0; /* 初始状态隐藏 */
+}
+
+.emoji1 {
+    animation: switch-animation step-end 2s infinite;
+}
+
+.emoji2 {
+    animation: switch-animation step-end 2s infinite;
+    animation-delay: 1s; /* 延迟2秒开始 */
+}
+
+@keyframes switch-animation {
+    0%, 100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
