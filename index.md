@@ -7,6 +7,10 @@ kramdown:
   parse_block_html: true
 ---
 
+
+Info: The current website is under construction. Translation and the transfer of website resources is in progress.
+
+
 # Introduction 
 The website will be a continuation of my existing tech blog, primarily dedicated to documenting content related to C++ and software development. After all, I'm not a frontend engineer, and I happen to be an ASCII enthusiast—so I created this website.
 
@@ -14,7 +18,7 @@ The website will be a continuation of my existing tech blog, primarily dedicated
     <div class="emoji1">( ⚆_⚆)</div>
     <div class="emoji2">(☉_☉ )</div>
 </div> -->
-
+<!-- 
 <div class="emoji-switch">
     <div class="emoji1">
     <pre>
@@ -30,7 +34,7 @@ The website will be a continuation of my existing tech blog, primarily dedicated
     -(((---(((--------
     </pre>
     </div>
-</div>
+</div> -->
 
 
 ## Some Learning Plans
