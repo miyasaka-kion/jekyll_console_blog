@@ -1,5 +1,5 @@
 ---
-title: lvalue and rvalue
+title: lvalue and rvalue, std::move()
 categories: cpp
 ---
 

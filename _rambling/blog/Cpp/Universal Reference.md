@@ -8,19 +8,29 @@ categories: cpp
 
 # Universal Reference
 
-通用引用接受左值
+通用引用是个比较恼人的事情，因为他长得跟一般的右值引用很像；
+
+通用引用可以接受左值和右值，比如：
 
 ```cpp
+#include <iostream>
+
 template <typename T>
-void func(T&& value) {
-    // ...
+void foo(T&& t) {
+    std::cout << "Inside foo: " << t << std::endl;
 }
 
 int main() {
-    int x = 42; // x 是左值
-    func(x);    // 传递左值，T&& 会变成左值引用
+    int x = 42;
+    const int y = 20;
 
-    func(100);  // 传递右值，T&& 会变成右值引用
+    // 通用引用 T&& 绑定到左值
+    foo(x);  // x 是左值
+    foo(y);  // y 是左值
+
+    // 通用引用 T&& 绑定到右值
+    foo(10);  // 10 是右值
+    foo(std::move(x));  // std::move(x) 是右值
 
     return 0;
 }
@@ -30,6 +40,8 @@ int main() {
 
 
 >    如果一个函数模板形参的类型为`T&&`，并且`T`需要被推导得知，或者如果一个对象被声明为`auto&&`，这个形参或者对象就是一个通用引用。
+
+
 
 >    如果类型声明的形式不是标准的`type&&`，或者如果类型推导没有发生，那么`type&&`代表一个右值引用。
 

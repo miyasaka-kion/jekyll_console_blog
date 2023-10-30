@@ -4,18 +4,18 @@ title: C++ Notes
 categories: cpp
 ---
 
->   status: 持续更新；
+> status: continuously updated;
 >
->   feature：足够长的会单独开一个专题
+> feature: topics long enough will be addressed in separate sections
 
 # Dynamic Memory
 
-```c++
-double* pvalue  = NULL; // Pointer initialized with null
+```cpp
+double* pvalue  = nullptr; // Pointer initialized with null
 pvalue  = new double;   // Request memory for the variable
 ```
 
-> The **malloc()** function from C, still exists in C++, but it is recommended to avoid using malloc() function. The main advantage of new over malloc() is that new **doesn't just allocate memory, it constructs objects** which is prime purpose of C++.
+> The **malloc()** function from C still exists in C++, but it is recommended to avoid using it. The main advantage of `new` over `malloc()` is that `new` **doesn't just allocate memory, it constructs objects**, which is the primary purpose of C++.
 
 # Namespace
 
@@ -23,7 +23,7 @@ Namespaces provide a method for preventing name conflicts in large projects.
 
 e.g.
 
-```c++
+```cpp
 #include <iostream>
 using namespace std;
 namespace my_namespace
@@ -53,21 +53,21 @@ int main()
 
 
 
-当`a`既出现在局部又出现在全局，`::a`所指的是全局变量而`a`是局部变量。
+When `a` appears in both local and global scopes, `::a` refers to the global variable while `a` refers to the local variable.
 
-```c++
+```cpp
 #include <iostream>
 using namespace std;
 namespace A
 {
     int a = 100;
-    namespace B            //嵌套一个命名空间B
+    namespace B            
     {
         int a =20;
     }
 }
 
-int a = 200;//定义一个全局变量
+int a = 200; // defining a global variable
 
 
 int main(int argc, char *argv[])
@@ -87,51 +87,49 @@ int main(int argc, char *argv[])
 ```
 A::a =100  
 A::B::a =20
-a =200      //全局变量a
+a =200      // global variable a
 ::a =200
-a =30       //局部变量a
+a =30       // local variable a
 ::a =200 
 ```
 
-## 建议
+## Recommendations
 
--   Use variables in a named namespace instead of using external global variables.
--   Use variables in an unnamed namespace instead of using static global variables.
+- Use variables in a named namespace instead of using external global variables.
+- Use variables in an unnamed namespace instead of using static global variables.
 
 # File Management
 
-### header file
+### Header File
 
-函数仅声明, 不定义.
+Functions are declared but not defined.
 
->   函数定义（function definition）和函数原型（function prototype）
+> Function definition and function prototype:
 >
->   1.  内容不同：函数定义包含了函数的具体实现，包括函数体和实际执行的代码；而函数原型只是函数的声明，只包含函数的基本信息。
->   2.  位置不同：函数定义通常放在源文件（如`.cpp`文件）中，提供函数的实际实现；函数原型通常放在头文件（如`.h`文件）中，提供函数的声明。
->   3.  使用方式不同：函数定义用于实际编写函数的逻辑和实现；函数原型用于告知编译器有关函数的存在和基本信息，以便在其他地方调用函数时进行类型检查。
->   4.  编译要求不同：函数定义必须在每个调用该函数的源文件中可见，编译器需要将函数的实现与调用处进行链接；函数原型只需要在调用处可见，编译器只需要知道函数的声明即可。
+> 1. Different content: Function definition includes the specific implementation of the function, including the function body and actual executable code; whereas function prototypes are only declarations that contain basic information about the function.
+> 2. Different locations: Function definitions are typically placed in source files (e.g., `.cpp` files) to provide the actual implementation of the function; function prototypes are usually placed in header files (e.g., `.h` files) to provide the declaration of the function.
+> 3. Different usage: Function definitions are used for writing the logic and implementation of the function; function prototypes are used to inform the compiler about the existence and basic information of the function, enabling type checking when the function is called elsewhere.
+> 4. Different compilation requirements: Function definitions must be visible in each source file that calls the function, and the compiler needs to link the implementation of the function with the call site; function prototypes only need to be visible at the call site, and the compiler only needs to know the function declaration.
 
--   Function prototypes
--   Symbolic constants defined using #define or const
--   Structure declarations
--   Class declarations
--   Template declarations
--   Inline functions
+- Function prototypes
+- Symbolic constants defined using #define or const
+- Structure declarations
+- Class declarations
+- Template declarations
+- Inline functions
 
-#### 引用 header file
+#### Including a Header File
 
--   double quotation marks: 搜索工作路径和 standard location;
--   angle brackets: host system’s file system that holds the **standard header files**
+- Double quotation marks: searches the working path and standard location;
+- Angle brackets: searches the host system's file system that holds the **standard header files**
 
-### source code
+### Source Code
 
-定义, 具体实现.
-
-
+Definitions with specific implementations.
 
 # Linkage
 
->   https://stackoverflow.com/questions/1358400/what-is-external-linkage-and-internal-linkage
+Refer to: [Stack Overflow Explanation](https://stackoverflow.com/questions/1358400/what-is-external-linkage-and-internal-linkage)
 
 ```cpp
 // In namespace scope or global scope.
@@ -145,47 +143,164 @@ int f(); // extern by default
 static int sf(); // explicitly static 
 ```
 
-
-
-
-
 # Optimizing Performance
 
-注意数组的遍历顺序:
+### Array Traversal Order
 
 ```cpp
-constexpr maxn = 1 << 10;
+constexpr int maxn = 1 << 10;
 for(int i = 1; i < maxn; i++) {
-	for(int j = 1; j < maxn; j++) {
+    for(int j = 1; j < maxn; j++) {
         // dealing something with a[i][j]... Such as
         a[i][j] += j;
     }
 }
 
 for(int i = 1; i < maxn; i++) {
-	for(int j = 1; j < maxn; j++) {
+    for(int j = 1; j < maxn; j++) {
         // dealing something with a[i][j]... Such as
         a[j][i] += j; // not a good practice
     }
 }
 ```
 
-第一种大部分时间在连续的内存上读写，会快很多.
+The first approach spends most of the time reading and writing on contiguous memory, which is much faster.
 
 ```cpp
 for(int i = 1; i < maxn; i++) {
-	for(int j = 1; j < maxn; j++) {
+    for(int j = 1; j < maxn; j++) {
         // dealing something with a[i][j]... Such as
- 		a[j][i] = f(a[j][i]);
+        a[j][i] = f(a[j][i]);
     }
 }
 ```
 
+If we apply a function to this two-dimensional array, and if the cost of the function is less than the cost of jumping in columns, even if we optimize this function, it won't optimize the overall running time.
+
+What's worse is when we need to access memory randomly, the time will become even longer—for example, when we use `std::list` and frequently perform `insert` operations, it will mess up the data in memory, resulting in low efficiency. If there is a fixed step, prefetching will come in to optimize performance.
+
+### Utilizing Branch Prediction
+
+Avoid complex:
+
+- Branches
+- Virtual function calls
+
+## Sharing Between Cores
+
+```cpp
+void test() {
+    Timer            timer;
+    std::atomic<int> a(-1);
+    std::thread      t0([&]() { work(a); });
+    std::thread      t1([&]() { work(a); });
+    std::thread      t2([&]() { work(a); });
+    std::thread      t3([&]() { work(a); });
+    t0.join();
+    t1.join();
+    t2.join();
+    t3.join();
+}
+```
+
+Using more cores in this situation will result in slower speeds because multiple cores are competing for the same data.
+
+```cpp
+void test_maybe_better() {
+    Timer            timer;
+    std::atomic<int> a(-1);
+    std::atomic<int> b(-1);
+    std::atomic<int> c(-1);
+    std::atomic<int> d(-1);
+    std::thread      t0([&]() { work(a); });
+    std::thread      t1([&]() { work(b); });
+    std::thread      t2([&]() { work(c); });
+   
+
+ std::thread      t3([&]() { work(d); });
+    t0.join();
+    t1.join();
+    t2.join();
+    t3.join();
+}
+```
+
+Attempting to avoid core competition among different atomic variables doesn't solve the problem, and it remains slow, similar to the previous case.
+
+Complete test program:
+
+```cpp
+#include <atomic>
+#include <chrono>
+#include <iostream>
+#include <memory>
+#include <thread>
 
 
-假如说我们对这个二维数组进行一些函数的运用，如果函数的开销小于在列上跳动的开销，那么就算优化了这个函数，也不会优化整体的运行时间.
+class Timer {
+private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
 
-什么是更糟糕，是当我们需要乱序访问内存的时候，时间会变得更长——比如我们使用`std::list`, 然后频繁进行`insert` 操作，这样就会把数据在内存上搞得乱七八糟，效率会很低。
+public:
+    Timer() {
+        start_time = std::chrono::high_resolution_clock::now();
+    }
+    ~Timer() {
 
-如果是固定步长的话，prefetch 会出手来优化性能。
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+        std::cout << "elapse time " << duration.count() << " ms" << std::endl;
+    }
+};
 
+void work(std::atomic<int>& a) {
+    for(int i = 1; i < 10000; i++) {
+        a++;
+    }
+}
+
+void test_one_core() {
+    Timer            timer;
+    std::atomic<int> a(-1);
+    work(a);
+    work(a);
+    work(a);
+    work(a);
+}
+
+void test() {
+    Timer            timer;
+    std::atomic<int> a(-1);
+    std::thread      t0([&]() { work(a); });
+    std::thread      t1([&]() { work(a); });
+    std::thread      t2([&]() { work(a); });
+    std::thread      t3([&]() { work(a); });
+    t0.join();
+    t1.join();
+    t2.join();
+    t3.join();
+}
+
+void test_maybe_better() {
+    Timer            timer;
+    std::atomic<int> a(-1);
+    std::atomic<int> b(-1);
+    std::atomic<int> c(-1);
+    std::atomic<int> d(-1);
+    std::thread      t0([&]() { work(a); });
+    std::thread      t1([&]() { work(b); });
+    std::thread      t2([&]() { work(c); });
+    std::thread      t3([&]() { work(d); });
+    t0.join();
+    t1.join();
+    t2.join();
+    t3.join();
+}
+
+int main() {
+    test_one_core();
+    test();
+    test_maybe_better();
+    return 0;
+}
+```
