@@ -1,45 +1,37 @@
 ---
-title: C++ thread
+title: C++ Thread
 layout: page
 categories: cpp
 ---
 
-
-
-
-
 # C++ Thread
 
+## Recovery
 
+Hit rate, miss rate, hit time, and miss penalty are key concepts related to the performance and efficiency of caches. These terms are used to describe the performance characteristics and effects of cache systems. Let me explain these concepts one by one:
 
-## Recover
+1. **Hit Rate**:
+    - Hit rate refers to the probability of finding the required data in the cache, i.e., the frequency of hits in the cache.
+    - Hit rate calculation formula: number of hits / (number of hits + number of misses).
+    - A high hit rate indicates that most requested data can be found in the cache, indicating good cache system performance.
 
-命中率、缺失率、命中时间和缺失代价是与高速缓存（Cache）性能和效率相关的关键概念。这些术语用于描述缓存系统的性能特征和效果。让我逐一解释这些概念：
+2. **Miss Rate**:
+    - Miss rate refers to the probability of not finding the required data in the cache, i.e., the frequency of cache misses.
+    - Miss rate calculation formula: number of misses / (number of hits + number of misses).
+    - A low miss rate indicates that the cache rarely needs to load data from the main memory, which helps improve performance.
 
-1. **命中率（Hit Rate）**：
-   - 命中率是指在高速缓存中找到所需数据的概率，即在缓存中发生命中的频率。
-   - 命中率计算公式：命中次数 / (命中次数 + 不命中次数)。
-   - 高命中率表示大部分请求的数据都可以在缓存中找到，缓存系统的性能良好。
+3. **Hit Time**:
+    - Hit time refers to the time taken to find the required data in the cache and return it to the requester. It is usually very short as caches are designed to provide fast data access.
+    - Lower hit time helps reduce access latency to the cache and improve overall performance.
 
-2. **缺失率（Miss Rate）**：
-   - 缺失率是指在高速缓存中无法找到所需数据的概率，即在缓存未命中的频率。
-   - 缺失率计算公式：不命中次数 / (命中次数 + 不命中次数)。
-   - 低缺失率表示高速缓存很少需要从主内存中加载数据，这有助于提高性能。
+4. **Miss Penalty**:
+    - Miss penalty refers to the time and cost required to load the required data from the main memory when a cache miss occurs.
+    - Miss penalty is usually much higher than hit time because loading data from the main memory takes more clock cycles and time.
+    - The performance and efficiency of a cache system are greatly influenced by the miss penalty. A lower miss penalty means that even if a cache miss occurs, performance can be quickly recovered.
 
-3. **命中时间（Hit Time）**：
-   - 命中时间是指从高速缓存中找到所需数据并返回给请求者所需的时间。它通常是非常短暂的，因为高速缓存设计用于提供快速的数据访问。
-   - 较低的命中时间有助于减少访问缓存的延迟，提高整体性能。
+## Back to the Point
 
-4. **缺失代价（Miss Penalty）**：
-   - 缺失代价是指当发生缓存未命中时，从主内存加载所需数据所需的时间和成本。
-   - 缺失代价通常远高于命中时间，因为从主内存加载数据需要更多的时钟周期和更多的时间。
-   - 高速缓存系统的性能和效率在很大程度上受到缺失代价的影响。较低的缺失代价意味着即使发生缓存未命中，也可以快速地恢复性能。
-
-
-
-## 回到正题
-
-一个简单的例子：
+A simple example:
 
 ```cpp
 #include <thread>
@@ -47,7 +39,6 @@ categories: cpp
 
 using std::cout;
 using std::endl;
-
 
 int main() {
     int cnt = 0;
@@ -70,20 +61,16 @@ int main() {
 }
 ```
 
-
-
-
-
-## 处理好核心之间竞争数据的问题
+## Managing Data Competition Between Cores
 
 ```cpp
 void test() {
-    Timer            timer;
+    Timer timer;
     std::atomic<int> a(-1);
-    std::thread      t0([&]() { work(a); });
-    std::thread      t1([&]() { work(a); });
-    std::thread      t2([&]() { work(a); });
-    std::thread      t3([&]() { work(a); });
+    std::thread t0([&]() { work(a); });
+    std::thread t1([&]() { work(a); });
+    std::thread t2([&]() { work(a); });
+    std::thread t3([&]() { work(a); });
     t0.join();
     t1.join();
     t2.join();
@@ -91,21 +78,19 @@ void test() {
 }
 ```
 
-这种情况下使用越多的核心速度会越慢，因为多个核心竞争同一个数据；
-
-
+Using more cores in this situation will result in slower speeds because multiple cores are competing for the same data.
 
 ```cpp
 void test_maybe_better() {
-    Timer            timer;
+    Timer timer;
     std::atomic<int> a(-1);
     std::atomic<int> b(-1);
     std::atomic<int> c(-1);
     std::atomic<int> d(-1);
-    std::thread      t0([&]() { work(a); });
-    std::thread      t1([&]() { work(b); });
-    std::thread      t2([&]() { work(c); });
-    std::thread      t3([&]() { work(d); });
+    std::thread t0([&]() { work(a); });
+    std::thread t1([&]() { work(b); });
+    std::thread t2([&]() { work(c); });
+    std::thread t3([&]() { work(d); });
     t0.join();
     t1.join();
     t2.join();
@@ -113,15 +98,9 @@ void test_maybe_better() {
 }
 ```
 
-尝试通过区分开不同的原子变量来避免核心之间竞争资源——但是这样并没有解决什么问题，和之前一样慢。
+Trying to avoid core competition among different atomic variables doesn't solve any problems, and it remains slow, similar to the previous case.
 
-
-
-
-
-
-
-完整测试程序：
+Complete test program:
 
 ```cpp
 #include <atomic>
@@ -129,7 +108,6 @@ void test_maybe_better() {
 #include <iostream>
 #include <memory>
 #include <thread>
-
 
 class Timer {
 private:
@@ -154,7 +132,7 @@ void work(std::atomic<int>& a) {
 }
 
 void test_one_core() {
-    Timer            timer;
+    Timer timer;
     std::atomic<int> a(-1);
     work(a);
     work(a);
@@ -163,12 +141,12 @@ void test_one_core() {
 }
 
 void test() {
-    Timer            timer;
+    Timer timer;
     std::atomic<int> a(-1);
-    std::thread      t0([&]() { work(a); });
-    std::thread      t1([&]() { work(a); });
-    std::thread      t2([&]() { work(a); });
-    std::thread      t3([&]() { work(a); });
+    std::thread t0([&]() { work(a); });
+    std::thread t1([&]() { work(a); });
+    std::thread t2([&]() { work(a); });
+    std::thread t3([&]() { work(a); });
     t0.join();
     t1.join();
     t2.join();
@@ -176,15 +154,15 @@ void test() {
 }
 
 void test_maybe_better() {
-    Timer            timer;
+    Timer timer;
     std::atomic<int> a(-1);
     std::atomic<int> b(-1);
     std::atomic<int> c(-1);
     std::atomic<int> d(-1);
-    std::thread      t0([&]() { work(a); });
-    std::thread      t1([&]() { work(b); });
-    std::thread      t2([&]() { work(c); });
-    std::thread      t3([&]() { work(d); });
+    std::thread t0([&]() { work(a); });
+    std::thread t1([&]() { work(b); });
+    std::thread t2([&]() { work(c); });
+    std::thread t3([&]() { work(d); });
     t0.join();
     t1.join();
     t2.join();
@@ -198,4 +176,3 @@ int main() {
     return 0;
 }
 ```
-
