@@ -1,12 +1,12 @@
 ---
-title: C++ Templates
+title: C++ Template
 categories: cpp
 
 ---
 
-# C++ Templates
+# C++ Template
 
-There is no doubt that C++ templates are a crucial part of the language.
+Undoubtedly, C++ template is a crucial part of the language.
 
 > [Useful Tool](https://cppinsights.io/)
 
@@ -16,178 +16,162 @@ A typical C++ template function looks like this:
 
 ```cpp
 template<typename T>
-T max (T const& a, T const& b)
-{
+T max(T const& a, T const& b) {
 	return b < a ? a : b;
 }
 ```
 
-However, not every `T` is acceptable. For instance, if `T` doesn't define the `<` operator, it won't work. Let's clearly define all the requirements for `T`:
+However, not every type `T` is suitable. For instance, if `T` does not define the `<` operator, it is not valid. Let's clarify all the requirements for `T`:
 
 - `operator <` (returning bool)
-- copy/move constructor
+- Copy/move constructor
 
 ## Concept
 
 ```cpp
 template<typename T>
-concept SupportsLessThan = requires (T x) {x < x;};
+concept SupportsLessThan = requires(T x) {x < x;};
 
 template<typename T>
 requires std::copyable<T> && SupportsLessThan<T>
-T max (T const& a, T const& b)
-{
+T max(T const& a, T const& b) {
 	return b < a ? a : b;
 }
 ```
 
-Restricting `T` is debug-friendly.
+Constraints on `T` are debug-friendly.
 
 ### Type Conversion
 
-Under different circumstances, if the parameters are passed by reference:
+In certain cases, if the function is called with parameters passed by reference:
 
-- Any type conversion is prohibited.
+- Prohibit any type conversions
 
-But what if type conversion is allowed?
+What if type conversions are allowed?
 
 ```cpp
 template<typename T>
-T max (T const& a, T const& b)
-{
+T max(T const& a, T const& b) {
 	return b < a ? a : b;
 }
 
 int main() {
-    max(4.2, 4); // In this case, we are uncertain whether T should be int or double.
+    max(4.2, 4); // It's ambiguous whether T should be int or double.
     return 0;
 }
 ```
 
 If the parameters are passed by value:
 
-- Only simple decay conversions are allowed.
+- Only allow decay conversions
 
 Consider this function:
 
 ```cpp
 template<typename T>
-T max (T a, T b)
-{
+T max(T a, T b) {
 	return b < a ? a : b;
 }
 ```
 
-When the arguments are passed by value to the template function, only a simple conversion, known as "decay," is allowed. Decay refers to certain special transformations of the parameter type, such as removing const qualifiers or converting array types to pointer types. Here are some examples:
+When the parameters are passed by value to the template function, only a simple conversion called "decay" is allowed. Decay refers to some special transformations of the parameter type, such as removing const qualifiers or converting array types to pointer types. Here are some examples:
 
 1. **Removing const qualifiers**: If the passed parameters have const qualifiers, they are removed. For example:
 
-    ```cpp
-    const int x = 42;
-    const int y = 10;
-    int result = max(x, y); // Both x and y will decay to int type.
-    ```
+   ```cpp
+   const int x = 42;
+   const int y = 10;
+   int result = max(x, y); // Both x and y will decay to the int type.
+   ```
 
-2. **References are converted to the referenced type**: If the passed parameters are references, they are converted to the referenced type. For example:
+2. **Reference is converted to the referenced type**: If the passed parameters are references, they are converted to the referenced type. For example:
 
-    ```cpp
-    int a = 5;
-    int &b = a;
-    int result = max(a, b); // Both a and b will decay to int type.
-    ```
+   ```cpp
+   int a = 5;
+   int &b = a;
+   int result = max(a, b); // Both a and b will decay to the int type.
+   ```
 
-3. **Original arrays are converted to pointers**: If the passed parameters are original arrays, they are converted to pointers to array elements. For example:
+3. **Raw arrays are converted to pointers**: If the passed parameters are raw arrays, they are converted to pointers to the array elements. For example:
 
-    ```cpp
-    int arr1[5] = {1, 2, 3, 4, 5};
-    int arr2[3] = {10, 20, 30};
-    int *result1 = max(arr1, arr2); // Both arr1 and arr2 will decay to int* type.
-    ```
+   ```cpp
+   int arr1[5] = {1, 2, 3, 4, 5};
+   int arr2[3] = {10, 20, 30};
+   int *result1 = max(arr1, arr2); // Both arr1 and arr2 will decay to the int* type.
+   ```
 
 ### Multiple Template Parameters
 
 ```cpp
 template<typename T1, typename T2>
-T1 max (T1 a, T2 b)
-{
+T1 max(T1 a, T2 b) {
 	return b < a ? a : b;
 }
 ```
 
-How should the return value be handled? The return value will change according to the deduced result of `T1`, which is not ideal.
+How is the return value handled? The return value will change based on the deduction result of `T1`, which is not desirable.
 
 #### Using Return Type Deduction
 
-``` cpp
+```cpp
 template<typename T1, typename T2>
-decltype(b < a ? a : b) max(T1 a, T2 b)
-{
+decltype(b < a ? a : b) max(T1 a, T2 b) {
   return b < a ? a : b;
 }
-
 
 /* First instantiated from: insights.cpp:8 */
 #ifdef INSIGHTS_USE_TEMPLATE
 template<>
-double max<double, int>(double a, int b)
-{
+double max<double, int>(double a, int b) {
   return static_cast<double>(b) < a ? static_cast<double>(b) : a;
 }
 #endif
 
-
-int main()
-{
+int main() {
   max(3.2000000000000002, 1);
   return 0;
 }
 ```
 
-Here, the compiler casts `int` to `double`. Consequently, the return value becomes `double`.
+Here, the compiler casts int to double. Consequently, the return value of the entire expression becomes double.
 
-> #### Excerpted from Vandevoorde, D., Josuttis, N. M., & Gregor, D. (Year). C++ Templates: The Complete Guide
+> #### Excerpt from "C++ Templates: The Complete Guide" by Vandevoorde, D., Josuttis, N. M., & Gregor, D.
 >
 > Note that
 >
 > ```cpp
 > template<typename T1, typename T2>
-> auto max (T1 a, T2 b) -> decltype(b<a?a:b);
+> auto max(T1 a, T2 b) -> decltype(true ? a : b);
 > ```
 >
-> is a declaration, and the compiler at compile-time decides the actual return type based on the result of the `?:` operator. However, the specific implementation may vary. In fact, using `true` as the condition for the `?:` operator is sufficient:
+> is a declaration. The compiler during the compilation phase decides the actual return type based on the result of the `?:` operator. In fact, using `true` as the condition for the `?:` operator is enough:
 >
 > ```cpp
 > template<typename T1, typename T2>
-> auto max (T1 a, T2 b) -> decltype(true?a:b);
+> auto max(T1 a, T2 b) -> decltype(true ? a : b);
 > ```
 >
-> > [Stack Overflow: Link](https://stackoverflow.com/questions/58093341/why-do-these-two-code-snippets-have-the-same-effect)
+> [Stack Overflow - Code Snippet Effect](https://stackoverflow.com/questions/58093341/why-do-these-two-code-snippets-have-the-same-effect)
 >
-> However, in some cases, there could be a severe issue: *since T might be a reference type*, the return type could also be inferred as a reference type. Therefore, you should return the decayed type of T, like this:
+> However, in some cases, there might be a severe issue: *Since T might be a reference type*, the return type might also be inferred as a reference type. Therefore, you should return the decayed type of T, like this:
 >
 > ```cpp
 > #include <type_traits>
 > template<typename T1, typename T2>
-> auto max (T1 a, T2 b) -> typename std::decay<decltype(true? a:b)>::type
-> {
+> auto max(T1 a, T2 b) -> typename std::decay<decltype(true ? a : b)>::type {
 > 	return b < a ? a : b;
 > }
 > ```
->
 
-
-
-Why does the function template return a reference type, when it should deduce a reference?
-
-Here, the return type is determined by `decltype(true? a:b)`. `decltype` provides a specific type deduction that includes information such as references and `const`. For example, if I call it like this:
+But why would the function template return a reference type, given that the function should go by reference? The return value is determined by `decltype(true ? a : b)`, and decltype provides a specific type deduction that includes references and const information. For example, when calling:
 
 ```cpp
 int x = 42;
-int& rx = x; 
+int& rx = x;
 max(rx, 5);
 ```
 
-the return type will be inferred as `int&`. However, in reality, `a` and `b` in the function `max` are copies of the call parameters `rx` and `5`, respectively. In other words, even though it's a reference type in the return, it's a reference to a function local variable, and after the lifetime of the function `max` ends, `a` and `b` will be destroyed. Therefore, the returned reference will be a dangling reference, and any operation on this reference will result in undefined behavior.
+the return type is deduced as `int&`, but in reality, `a` and `b` in the function `max` are copies of `rx` and `5`. This means that even though it's a reference type returned, it's a reference to a local variable within the function `max`, and after the lifetime of the function, `a` and `b` will be destroyed. Consequently, the returned reference will be a dangling reference, and any operations on this reference will lead to undefined behavior.
 
 For example:
 
@@ -198,34 +182,29 @@ void print(const T& t) {
     std::cout << "Addr: " << &t << std::endl;
 }
 
-
 template<typename T1, typename T2>
-auto max (const T1& a, const T2& b) -> decltype(true? a:b)
-{
-    return b < a ? a : b; // Warning: Reference to stack memory associated with parameter 'b' returnedclang(-Wreturn-stack-address)
+auto max(const T1& a, const T2& b) -> decltype(true ? a : b) {
+    return b < a ? a : b; // Warning: Reference to stack memory associated with parameter 'b' returned (clang -Wreturn-stack-address)
 }
 
-int main()
+int x = 42;
+int& rx = x;
+print(x);
+print(rx);
+double y = 4.2;
+double& ry = y;
+std::cout << "Is max(rx,
 
-
-{
-    int x = 42;
-    int& rx = x;
-    print(x);
-    print(rx);
-    double y = 4.2;
-    double& ry = y;
-    std::cout << "Is max(rx, 5) a reference?: " << std::is_reference<decltype(max(rx, 5))>::value << std::endl;
-    int& max_r = max(rx, 5);
-    print(max_r);
-    max_r = 100;
-    print(x);
-}
+ 5) a reference?: " << std::is_reference<decltype(max(rx, 5))>::value << std::endl;
+int& max_r = max(rx, 5);
+print(max_r);
+max_r = 100;
+print(x);
 ```
 
-The output will be:
+Output:
 
-```cpp
+```
 Value: 42
 Addr: 0x9890fffd1c
 Value: 42
@@ -237,11 +216,11 @@ Value: 42
 Addr: 0x9890fffd1c
 ```
 
-It can be observed that `max(rx, 5)` is indeed a reference, but its `value` is different from the one pointed to by the original `x`. Moreover, the `value` of `max(rx, 5)` is some arbitrary value, not the expected `42`.
+You can observe that `max(rx, 5)` is indeed a reference, but its `value` points to an address different from the original `x` — and the `value` of `max_r` is some strange data.
 
 ### Simple Applications
 
-Printing anything:
+Output anything of any type:
 
 ```cpp
 template<typename T>
@@ -250,9 +229,7 @@ void print(T& someArg) {
 }
 ```
 
-
-
-Printing the type's name (although this might not provide a human-friendly form):
+Output the name of the type (although it may not give a human-readable form):
 
 ```cpp
 template<typename T>
@@ -261,7 +238,7 @@ void printType(T value) {
 }
 ```
 
-For instance, for the type:
+For example, for the type:
 
 ```cpp
 class MyType {
@@ -270,20 +247,20 @@ public:
 };
 ```
 
-an instance of it,
+an instance:
 
 ```cpp
 MyType someInstance;
 printType(someInstance);
 ```
 
-will output:
+prints:
 
 ```cpp
 6MyType
 ```
 
-Note that using `typeid(value).name()` might not always yield accurate results. To obtain precise type information, using Boost is the recommended approach:
+Note that using `typeid(value).name()` may not always provide accurate results. To get the exact type, using boost is a better approach:
 
 > Boost is a third-party package. First, install Boost:
 >
@@ -310,12 +287,10 @@ Note that using `typeid(value).name()` might not always yield accurate results. 
 > add_executable(${PROJECT_NAME} ${SRC_LIST})
 > target_link_libraries(${PROJECT_NAME} Boost::type_erasure)
 > ```
->
 
 ### Removing References
 
 To review:
-
 `std::is_reference<some_type>::value` can determine whether `some_type` is a reference type, including lvalue references, rvalue references, and references to pointers.
 
 ```cpp
@@ -325,22 +300,21 @@ std::cout << std::is_reference<decltype(rref_x)>::value << std::endl;
 std::cout << std::is_reference<decltype(some_x)>::value << std::endl;
 ```
 
-This will output:
+Output:
 
-```cpp
+```
 1
 1
 0
 ```
 
-The template functions exhibit referential properties, which is why you attempted to implement a function to remove all references, including lvalue references and rvalue references:
+Template functions have the property of removing references, so it's only natural to try a similar approach with template classes:
 
 ```cpp
 template<typename T>
 struct my_remove_reference {
     using type = T;
 };
-
 ```
 
 ```cpp
@@ -349,81 +323,66 @@ std::cout << std::is_reference<my_remove_reference<int&>::type>::value << std::e
 std::cout << std::is_reference<my_remove_reference<int&&>::type>::value << std::endl;
 ```
 
-This will output:
+Output:
 
-```cpp
+```
 0
-1 // <my_remove_reference<int&>::type is a reference!
-1 // <my_remove_reference<int&>::type is a reference!
+0
+0
 ```
 
-However, it seems to have failed. The crucial point to note is that removing references occurs when type deduction happens. In the template function `print_is_reference`, the type `T` is the result of type deduction, and thus it is devoid of any references. Thus, whether it's `int`, `int&`, or `int&&`, `T` will be deduced as `int`, without any references.
-
-However, in the case of the template class `my_remove_reference`, you explicitly specify the type of `T` as `int&` or `int&&`. As a result, `T` retains the information about the reference. In this scenario, assigning the type `T` to the member `type` does not undergo type deduction, thus preserving the reference information. This is why your attempt with `my_remove_reference` did not remove references.
-
-A more specific example is:
+STL:
 
 ```cpp
-#include <boost/type_index.hpp>
-#include <iostream>
-#include <type_traits>
+_EXPORT_STD template <class _Ty>
+struct remove_reference {
+   using type                 = _Ty;
+   using _Const_thru_ref_type = const _Ty;
+};
 
-template<typename T>
-void f(const T& param)
-{
-    std::cout << " >>>>>>>>>>>>>>>>>> " << std::endl;
-    using boost::typeindex::type_id_with_cvr;
-    // Show T
-    std::cout << "T =     " << type_id_with_cvr<T>().pretty_name() << '\n';
-    
-    // Show param type
-    std::cout << "param = " << type_id_with_cvr<decltype(param)>().pretty_name() << '\n';
-}
+template <class _Ty>
+struct remove_reference<_Ty&> {
+   using type                 = _Ty;
+   using _Const_thru_ref_type = const _Ty&;
+};
 
-int main() {
-    int x = 42;
-    int& rx = x;
-    const int& crx = rx;
-    // Deduction will happen
-    f(x);
-    f(rx);
-    f(crx);
-
-    // Explicitly specify the paramType
-    f<int>(x);
-    f<int&>(x);
-    f<int&&>(x);    
-    return 0;
-}
+template <class _Ty>
+struct remove_reference<_Ty&&> {
+   using type                 = _Ty;
+   using _Const_thru_ref_type = const _Ty&&;
+};
 ```
 
-When you explicitly specify `T`, it will remain unchanged from what you put inside the `<>`.
+### Preserving `const`?
 
-```cpp
- >>>>>>>>>>>>>>>>>> 
-T =     int
-param = int const&
- >>>>>>>>>>>>>>>>>> 
-T =     int
-param = int const&
- >>>>>>>>>>>>>>>>>> 
-T =     int
-param = int const&
- >>>>>>>>>>>>>>>>>> 
-T =     int
-param = int const&
- >>>>>>>>>>>>>>>>>> 
-T =     int&
-param = int& // 'const' is removed, because it's overridden by the int& passed inside <>
- >>>>>>>>>>>>>>>>>> 
-T =     int&&
-param = int& // Same as above
-```
+In EFC++, a categorization discussion is made from a strictness perspective, so I won't repeat the content here.
 
-Indeed, `f<int> (x)` explicitly states that `T` is `int`, resulting in `paramType` being `int const&`. `f<int&> (x)` attempts to enforce `T` as `int&`, but it doesn't fit within the template, hence the const is overridden by the `int&` passed inside the `<>`.
-
-Returning to the topic of removing references, the correct approach is to perform partial specializations for lvalue references and rvalue references:
+I will answer the question "why" from an intuitive or logical perspective.
 
 ```cpp
 template<typename T>
-struct
+void f(T& param);
+```
+
+Firstly, for this deduction:
+
+```cpp
+int x=27;                       
+f(x);                           
+```
+
+The function `f` has no `const` from its inception, indicating that the function's intent is to modify the value of `param`. Therefore, `ParamType` is deduced as `int&`.
+
+```cpp
+const int cx=x;                 
+f(cx);                          
+```
+
+`x` is initially defined as constant, and the parameter `param` in function `f` is a reference. Therefore, `ParamType` is deduced as `const int&`.
+
+```cpp
+const int& rx=x;                
+f(rx);                          
+```
+
+Here, `rx` is already defined as a reference to `x` as a constant int. The function `f` is a relaxation of `rx`'s declaration, so `ParamType` is deduced as `const int&`.
