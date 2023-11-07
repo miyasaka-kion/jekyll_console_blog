@@ -8,33 +8,11 @@ kramdown:
 ---
 
 
-Info: The current website is under construction. Translation and the transfer of website resources is in progress.
+INFO: Please note that our website is currently undergoing construction as we work on translating and transferring its resources.
 
 
 # Introduction 
-The website will be a continuation of my existing tech blog, primarily dedicated to documenting content related to C++ and software development. After all, I'm not a frontend engineer, and I happen to be an ASCII enthusiast—so I created this website.
-
-<!-- <div class="emoji-switch">
-    <div class="emoji1">( ⚆_⚆)</div>
-    <div class="emoji2">(☉_☉ )</div>
-</div> -->
-<!-- 
-<div class="emoji-switch">
-    <div class="emoji1">
-    <pre>
-        |\__/,|   (`\ 
-      _.| ⚆_⚆ |_   ) )      <-- My Cat ドラゴン
-    -(((---(((-------- 
-    </pre>
-    </div>
-    <div class="emoji2">
-    <pre>
-        |\__/,|   (`\ 
-      _.|☉_☉  |_   ) )      <-- My Cat ドラゴン
-    -(((---(((--------
-    </pre>
-    </div>
-</div> -->
+The website will be an extension and continuation of my existing [blog](https://www.cnblogs.com/kion), primarily dedicated to documenting content related to C++ and software development. After all, being not a frontend developer, I created this website using Jekyll and GitHub Pages, allowing me to focus on my content creation rather than something else.
 
 
 ## Some Learning Plans
@@ -52,12 +30,4 @@ The website will be a continuation of my existing tech blog, primarily dedicated
 ### Future
   - OpenGL and related graphical technique;
   - Socket Programming in several languages;
-
-
-
-<!-- <details>
-	<summary>Click to expand</summary>
-##	Long content here
-	and here
-</details> -->
 
